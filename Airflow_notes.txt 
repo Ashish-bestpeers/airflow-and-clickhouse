@@ -1,0 +1,151 @@
+Summary
+Apache Airflow is an open-source platform used to programmatically author, schedule, and monitor workflows. It allows users to define workflows as Directed Acyclic Graphs (DAGs) of tasks. Airflow's extensibility makes it easy to integrate with various databases and services, providing a robust platform for managing complex workflows.
+
+Important Points
+DAG (Directed Acyclic Graph): Core concept in Airflow. A DAG represents a collection of tasks with explicit execution order.
+Task: An individual unit of work in a DAG.
+Operators: Define what tasks do. Common operators include PythonOperator, BashOperator, DummyOperator, etc.
+Sensors: A special type of operator that waits for a certain condition to be met before moving to the next task.
+Executor: Determines how task instances are run. Options include SequentialExecutor, LocalExecutor, CeleryExecutor, etc.
+Scheduler: Responsible for scheduling jobs and assigning tasks to workers.
+Web Server: Provides a user interface to manage and monitor workflows.
+Metadata Database: Stores information about DAGs, tasks, and their states.
+
+Basic Installation:
+pip install apache-airflow
+
+Initialize Database:
+airflow db init
+
+Create User:
+airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com
+
+Start Web Server:
+airflow webserver --port 8080
+
+Start Scheduler:
+airflow scheduler
+
+Types of Installations
+Standalone: Suitable for small setups. Uses SequentialExecutor.
+Local: Uses LocalExecutor for better performance.
+Celery: Distributed setup using CeleryExecutor for large-scale deployments.
+Kubernetes: Uses KubernetesExecutor for dynamic resource allocation.
+
+Important Commands
+
+Initialize Database:
+airflow db init
+
+List DAGs:
+airflow dags list
+
+Trigger DAG:
+airflow dags trigger <dag_id>
+
+List Tasks in a DAG:
+airflow tasks list <dag_id>
+
+Run Task:
+airflow tasks run <dag_id> <task_id> <execution_date>
+
+Pause/Unpause DAG:
+airflow dags pause <dag_id>
+airflow dags unpause <dag_id>
+
+Start Web Server:
+airflow webserver --port 8080
+
+Start Scheduler:
+airflow scheduler
+
+Important Sentence 
+
+from airflow import DAG
+from airflow.operators.dummy_operator import DummyOperator
+from datetime import datetime
+
+default_args = {
+    'owner': 'airflow',
+    'start_date': datetime(2023, 1, 1),
+}
+
+with DAG('example_dag', default_args=default_args, schedule_interval='@daily') as dag:
+    start = DummyOperator(task_id='start')
+    end = DummyOperator(task_id='end')
+    start >> end
+
+
+python operator
+
+from airflow.operators.python_operator import PythonOperator
+
+def my_function(**kwargs):
+    print("Hello Airflow")
+
+run_my_function = PythonOperator(
+    task_id='run_my_function',
+    python_callable=my_function,
+    provide_context=True,
+    dag=dag,
+)
+
+bash operator
+from airflow.operators.bash_operator import BashOperator
+
+run_this = BashOperator(
+    task_id='run_this',
+    bash_command='echo "Hello Airflow!"',
+    dag=dag,
+)
+
+
+connecting with dofferent databases
+from airflow.hooks.postgres_hook import PostgresHook
+
+def fetch_data():
+    pg_hook = PostgresHook(postgres_conn_id='my_postgres_connection')
+    connection = pg_hook.get_conn()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM my_table")
+    result = cursor.fetchall()
+    for row in result:
+        print(row)
+
+fetch_data_task = PythonOperator(
+    task_id='fetch_data_task',
+    python_callable=fetch_data,
+    dag=dag,
+)
+
+connecting to mysql
+dependencies
+pip install apache-airflow-providers-mysql
+
+Create MySQL connection in the Airflow web interface:
+
+Conn ID: my_mysql_connection
+Conn Type: MySQL
+Host: localhost
+Schema: my_database
+Login: my_user
+Password: my_password
+Port: 3306
+
+using mysql hooks
+from airflow.providers.mysql.hooks.mysql import MySqlHook
+
+def fetch_data():
+    mysql_hook = MySqlHook(mysql_conn_id='my_mysql_connection')
+    connection = mysql_hook.get_conn()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM my_table")
+    result = cursor.fetchall()
+    for row in result:
+        print(row)
+
+fetch_data_task = PythonOperator(
+    task_id='fetch_data_task',
+    python_callable=fetch_data,
+    dag=dag,
+)

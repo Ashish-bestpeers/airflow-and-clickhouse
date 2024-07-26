@@ -1,0 +1,15 @@
+
+Summary
+ClickHouse is an open-source columnar database management system (DBMS) for online analytical processing (OLAP). It is designed for high-performance query processing and real-time analytics on large volumes of data.
+
+Key Features
+Columnar Storage: Optimized for reading and writing large volumes of data.
+Real-time Analytics: Provides low-latency queries and real-time analytics.
+Scalability: Scales horizontally and vertically to handle large datasets.
+SQL Support: Uses SQL for querying, making it familiar to users with SQL knowledge.
+High Performance: Designed for high-speed data ingestion and query execution.
+
+Installation
+docker pull clickhouse/clickhouse-server
+
+docker pull clickhouse/clickhouse-server
