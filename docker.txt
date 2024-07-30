@@ -1,0 +1,193 @@
+Step-by-Step Installation:
+Update Your Packages:
+
+sudo apt-get update
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+
+Add Docker’s Official GPG Key:
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+Set Up the Stable Repository:
+sudo add-apt-repository \
+  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) \
+  stable"
+
+install Docker:
+sudo apt-get update
+sudo apt-get install docker-ce
+
+Verify Docker Installation:
+sudo systemctl status docker
+
+Run Docker Without sudo (Optional):
+sudo usermod -aG docker ${USER}
+su - ${USER}
+
+///////////////////////////////////////////////////Docker file/////////////////////////////////////////
+Dockerfile Explanation
+A Dockerfile is a script that contains instructions on how to build a Docker image. Here’s an example Dockerfile:
+# Use an official Python runtime as a parent image
+FROM python:3.8-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+
+Components of Dockerfile:
+FROM: Specifies the base image.
+WORKDIR: Sets the working directory inside the container.
+COPY: Copies files from the host to the container.
+RUN: Executes commands in the container during the build process.
+EXPOSE: Exposes a port to be used by the container.
+ENV: Sets environment variables.
+CMD: Specifies the command to run when the container starts.
+
+/////////////////////////////////////////////common commands ////////////////////////////////////////
+Common Docker Commands
+Container Lifecycle:
+Build an Image:
+docker build -t my-image:tag .
+
+Run a continer:
+docker run -d --name my-container -p 8080:80 my-image:tag
+
+list of running continer:
+docker ps
+
+list of all continers:
+docker ps -a
+
+stop a continer:
+docker stop my-continer 
+
+Remove a continer:
+docker rm my-container
+/////////////////////////////////////////////Debugging commands ///////////////////////////////////////
+Debugging and Troubleshooting:
+View Logs:
+docker logs my-container
+
+access a running continer:
+docker exec -it my-container /bin/bash
+
+instect continer details:
+docker inspect my-container
+
+check container resource uses:
+docker stats my-container
+
+check docker events:
+docker events
+
+View continer process:
+docker top my-container
+
+/////////////////////////////////////////////terboshooting commands/////////////////////////////////////
+Tips for Troubleshooting:
+Check Docker Daemon Logs:
+sudo journalctl -u docker
+
+Verify docker network:
+docker network ls
+docker network inspect <network-name>
+
+restart docker service
+sudo systemctl restart docker
+
+################################################docker files ###########################################
+
+Dockerfile
+# Use an official Python runtime as a parent image
+FROM python:3.8-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+
+////////////////////////////////////////////// .dockerignore ///////////////////////////////////
+
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+
+/////////////////////////////////////////docker-compose.yml ////////////////////////////////////
+
+version: '3'
+services:
+  web:
+    image: my-web-image
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+  redis:
+    image: "redis:alpine"
+
+////////////////////////////////////////Daemon.json ///////////////////////////////////////////////
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  "storage-driver": "overlay2"
+}
+
+/////////////////////////////////////////Explanation of files //////////////////////////////////////
+Commands for Managing Docker Files
+Dockerfile Commands
+    FROM: Specifies the base image.
+    WORKDIR: Sets the working directory in the container.
+    COPY: Copies files from the host to the container.
+    RUN: Runs a command in the container.
+    EXPOSE: Exposes a port.
+    ENV: Sets an environment variable.
+    CMD: Specifies the default command to run in the container.
+docker-compose.yml Commands
+    version: Specifies the version of the Compose file format.
+    services: Defines the services to be run.
+    image: Specifies the image to use.
+    build: Specifies build options.
+    ports: Maps ports.
+    volumes: Defines volumes.
+    environment: Sets environment variables.
+
